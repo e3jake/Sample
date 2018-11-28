@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bug 파뤼~~</title>
+<meta http-equiv="refresh" content="1000">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jsapi"></script>
+<script type="text/javascript" src="/js/loader.js"></script>
+
+<script>
+  function printTime() {
+    var clock = document.getElementById("clock"); // 출력할 장소 선택
+    var now = new Date();                         // 현재시간
+    var nowTime = now.getFullYear() + "." + (now.getMonth()+1) + "." + now.getDate() + " " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+    clock.innerHTML = nowTime;      // 현재시간을 출력
+  }
+  window.onload = function() {         // 페이지가 로딩되면 실행
+    printTime();
+  }
+</script>
+
+
+<script type="text/javascript">
+    var queryObject = "";
+    var queryObjectLen = "";
+    $.ajax({
+        type : 'POST',
+        url : 'score.jsp',
+        dataType : 'json',
+        success : function(data) {
+            queryObject = eval('(' + JSON.stringify(data,null, 2) + ')');             
+            queryObjectLen = queryObject.barlist.length;
+            //alert('Total : ' + queryObjectLen);
+        },
+        error : function(xhr, type) {
+            alert('server error occoured')
+        }
+    });
+ 
+    google.charts.load('current', { packages : [ 'corechart', 'bar' ]
+    });
+    google.charts.setOnLoadCallback(drawMultSeries);
+ 
+    function drawMultSeries() {
+        
+         //var barcolor = [ 'green', 'blue', 'red', 'silver' , 'gold', 'blue', 'gold','black','yellow','green','red','blue','black','silver','gold','copper','green'];
+         var barcolor = [ '#d8d8d8', '#bdbdbd', '#a4a4a4', '#848484' , '#6e6e6e', '#585858', '#424242','#2e2e2e','#0b243b','#0b4c5f','#086a87','#2e9af2','#00bfff','#01dfd7','#00ffff','#00ff80','#2efe64'];
+         var data = new google.visualization.DataTable();
+         data.addColumn('string', 'TEAM');
+         data.addColumn('number', 'SCORE');
+         data.addColumn({type: 'string', role: 'annotation'});
+         data.addColumn({type: 'string', role: 'style'});
+ 
+        //alert('data생성---------------------------' + queryObjectLen);
+        for (var i = 0; i < queryObjectLen; i++) {
+            var TEAM = queryObject.barlist[i].TEAM;
+            var SCORE = queryObject.barlist[i].SCORE;
+            //alert(TEAM +': '+ SCORE +' '+ barcolor[i]);
+            data.addRows([ [ TEAM, SCORE, TEAM+' '+SCORE, barcolor[i] ] ]);
+ 
+        }
+ 
+        var options = {
+	    height : 800,
+            width  :'100%',
+	    animation: {
+		duration: 1000,
+		easing: 'out',
+		startup: true
+	    },
+            bar: {groupWidth: "85%"},
+            hAxis : {
+                minValue : 0
+            },
+	    chartArea: {left:100, top:30, right:200, width:"100%",height:"80%"},
+            annotations: {
+                textStyle: {
+                   fontSize: 15,
+                   italic: true,
+		   bold: true,
+                   color: '#F0A57C'
+                 }
+            },
+	    colors: [ 'green', 'blue' ]
+
+        };
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>
+</head>
+<body>
+    <font size=5><center>버그 파티 결과</center></font>
+    <div style="text-align:right; width: 100%">
+        <font size=2>update : <span id="clock"></span></font>
+    </div>
+
+    <div id="chart_div" style="padding:0px 20px 0px 0px;"></div>
+ 
+</body>
+</html>
