@@ -17,8 +17,9 @@
         List barlist = new LinkedList();
  
 	      //String query = "select team as TEAM, sum(score) as SCORE from test group by team";
-        //특정 IP에서 입력한 데이터값만 추출하기 위한 쿼리
-	      String query = "select team as TEAM, sum(score) as SCORE from test where ip='10.10.10.10' group by team";
+              //특정 IP에서 입력한 데이터값만 추출하기 위한 쿼리
+	      String query = "select team as TEAM, sum(score) as SCORE from test where
+ ip='10.144.242.119' and team <> '' group by team order by SCORE desc";
 
 	      PreparedStatement pstm = con.prepareStatement(query);
         rs = pstm.executeQuery(query);
